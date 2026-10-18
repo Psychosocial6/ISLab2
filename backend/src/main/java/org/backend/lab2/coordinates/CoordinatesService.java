@@ -16,7 +16,7 @@ public class CoordinatesService {
     private final CoordinatesMapper coordinatesMapper;
 
     public List<CoordinatesResponse> getCoordinates() {
-        return coordinatesRepository.findAll()
+        return coordinatesRepository.findAvailableCoordinates()
                 .stream()
                 .map(coordinatesMapper::fromEntity)
                 .toList();

@@ -12,4 +12,16 @@ public interface PersonRepository extends JpaRepository<PersonEntity, Long> {
     List<PersonEntity> findByHeight(Double height);
 
     Page<PersonEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
+
+    boolean existsByCoordinatesId(Long coordinatesId);
+
+    boolean existsByCoordinatesIdAndIdNot(Long coordinatesId, Long id);
+
+    boolean existsByLocationId(Long locationId);
+
+    boolean existsByLocationIdAndIdNot(Long locationId, Long id);
 }

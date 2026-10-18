@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.backend.lab2.coordinates.CoordinatesEntity;
 import org.backend.lab2.coordinates.CoordinatesRepository;
+import org.backend.lab2.coordinates.dto.CoordinatesRequest;
 import org.backend.lab2.enums.Color;
 import org.backend.lab2.enums.Country;
 import org.backend.lab2.exceptions.custom.CoordinatesNotFoundException;
@@ -12,6 +13,7 @@ import org.backend.lab2.exceptions.custom.LocationNotFoundException;
 import org.backend.lab2.exceptions.custom.PersonNotFoundException;
 import org.backend.lab2.locations.LocationEntity;
 import org.backend.lab2.locations.LocationRepository;
+import org.backend.lab2.locations.dto.LocationRequest;
 import org.backend.lab2.persons.dto.PersonRequest;
 import org.backend.lab2.persons.dto.PersonResponse;
 import org.backend.lab2.utils.ImportMapper;
@@ -59,6 +61,11 @@ public class PersonService {
 
     @Transactional
     public PersonResponse createPerson(PersonRequest personRequest) {
+        if (personRepository.existsByName(personRequest.name())) {
+            throw new IllegalArgumentException(
+                    String.format("Person with name %s already exists", personRequest.name())
+            );
+        }
         PersonEntity personEntity = new PersonEntity(
                 personRequest.name(),
                 resolveCoordinates(personRequest),
@@ -90,34 +97,58 @@ public class PersonService {
     public PersonResponse updatePerson(Long id, PersonRequest personRequest) {
         PersonEntity personEntity = personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
+        if (personRepository.existsByNameAndIdNot(personRequest.name(), id)) {
+            throw new IllegalArgumentException(
+                    String.format("Person with name %s already exists", personRequest.name())
+            );
+        }
         personEntity.setName(personRequest.name());
         if (personRequest.coordinatesId() != null) {
+            if (personRepository.existsByCoordinatesIdAndIdNot(personRequest.coordinatesId(), id)) {
+                throw new IllegalArgumentException("Coordinates already belong to another person");
+            }
             personEntity.setCoordinates(coordinatesRepository.findById(personRequest.coordinatesId())
                     .orElseThrow(() -> new CoordinatesNotFoundException(personRequest.coordinatesId())));
         } else if (personRequest.coordinates() != null) {
-            CoordinatesEntity coordinates = personEntity.getCoordinates();
-            coordinates.setX(personRequest.coordinates().x());
-            coordinates.setY(personRequest.coordinates().y());
-            personEntity.setCoordinates(coordinatesRepository.save(coordinates));
+            CoordinatesEntity curr = personEntity.getCoordinates();
+            CoordinatesRequest next = personRequest.coordinates();
+
+            boolean isChanged = !curr.getX().equals(next.x()) || !curr.getY().equals(next.y());
+            if (isChanged && coordinatesRepository.existsByXAndY(next.x(), next.y())) {
+                throw new IllegalArgumentException("Coordinates already exist");
+            }
+            curr.setX(next.x());
+            curr.setY(next.y());
+            personEntity.setCoordinates(coordinatesRepository.save(curr));
         }
         personEntity.setEyeColor(personRequest.eyeColor());
         personEntity.setHairColor(personRequest.hairColor());
         if (personRequest.locationId() != null) {
+            if (personRepository.existsByLocationIdAndIdNot(personRequest.locationId(), id)) {
+                throw new IllegalArgumentException("Location already belong to another person");
+            }
             personEntity.setLocation(locationRepository.findById(personRequest.locationId())
                     .orElseThrow(() -> new LocationNotFoundException(personRequest.locationId())));
         } else if (personRequest.location() != null) {
             LocationEntity location = personEntity.getLocation();
+            LocationRequest loc = personRequest.location();
+
             if (location != null) {
-                location.setX(personRequest.location().x());
-                location.setY(personRequest.location().y());
-                location.setZ(personRequest.location().z());
+                boolean isChanged = !location.getX().equals(loc.x())
+                        || !location.getY().equals(loc.y())
+                        || !location.getZ().equals(loc.z());
+                if (isChanged && locationRepository.existsByXAndYAndZ(loc.x(), loc.y(), loc.z())) {
+                    throw new IllegalArgumentException("Location already exists");
+                }
+                location.setX(loc.x());
+                location.setY(loc.y());
+                location.setZ(loc.z());
                 personEntity.setLocation(locationRepository.save(location));
             } else {
-                LocationEntity newLoc = new LocationEntity(
-                        personRequest.location().x(),
-                        personRequest.location().y(),
-                        personRequest.location().z()
-                );
+                if (locationRepository.existsByXAndYAndZ(loc.x(), loc.y(), loc.z())) {
+                    throw new IllegalArgumentException("Location already exists");
+                }
+                LocationEntity newLoc = new LocationEntity(loc.x(), loc.y(), loc.z());
                 personEntity.setLocation(locationRepository.save(newLoc));
             }
         } else {
@@ -279,10 +310,16 @@ public class PersonService {
 
     private CoordinatesEntity resolveCoordinates(PersonRequest personRequest) {
         if (personRequest.coordinatesId() != null) {
+            if (personRepository.existsByCoordinatesId(personRequest.coordinatesId())) {
+                throw new IllegalArgumentException("Coordinates already belong to another person");
+            }
             return coordinatesRepository.findById(personRequest.coordinatesId())
                     .orElseThrow(() -> new CoordinatesNotFoundException(personRequest.coordinatesId()));
         }
-
+        CoordinatesRequest coords = personRequest.coordinates();
+        if (coordinatesRepository.existsByXAndY(coords.x(), coords.y())) {
+            throw new IllegalArgumentException("Coordinates already exist");
+        }
         CoordinatesEntity coordinates = new CoordinatesEntity(
                 personRequest.coordinates().x(),
                 personRequest.coordinates().y()
@@ -292,15 +329,22 @@ public class PersonService {
 
     private LocationEntity resolveLocation(PersonRequest personRequest) {
         if (personRequest.locationId() != null) {
+            if (personRepository.existsByLocationId(personRequest.locationId())) {
+                throw new IllegalArgumentException("Location already belong to another person");
+            }
             return locationRepository.findById(personRequest.locationId())
                     .orElseThrow(() -> new LocationNotFoundException(personRequest.locationId()));
 
         }
         if (personRequest.location() != null) {
+            LocationRequest location = personRequest.location();
+            if (locationRepository.existsByXAndYAndZ(location.x(), location.y(), location.z())) {
+                throw new IllegalArgumentException("Location already exist");
+            }
             LocationEntity locationEntity = new LocationEntity(
-                    personRequest.location().x(),
-                    personRequest.location().y(),
-                    personRequest.location().z()
+                    location.x(),
+                    location.y(),
+                    location.z()
             );
             return locationRepository.save(locationEntity);
         }

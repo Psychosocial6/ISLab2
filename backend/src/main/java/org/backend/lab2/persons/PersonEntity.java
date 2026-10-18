@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class PersonEntity {
     private Long id;
     @Column(name = "name", nullable = false, columnDefinition = "TEXT CHECK (trim(name) <> '')")
     private String name;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "coordinates_id", nullable = false)
     private CoordinatesEntity coordinates;
     @Column(name = "creation_date", nullable = false)
@@ -45,7 +45,7 @@ public class PersonEntity {
     @Column(name = "hair_color")
     @Enumerated(EnumType.STRING)
     private Color hairColor;
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "location_id")
     private LocationEntity location;
     @Column(name = "height", nullable = false, columnDefinition = "DOUBLE PRECISION CHECK (height > 0)")

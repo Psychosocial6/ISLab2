@@ -16,7 +16,7 @@ public class LocationService {
     private final LocationMapper locationMapper;
 
     public List<LocationResponse> getLocations() {
-        return locationRepository.findAll()
+        return locationRepository.findAvailableLocations()
                 .stream()
                 .map(locationMapper::fromEntity)
                 .toList();

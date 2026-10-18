@@ -7,6 +7,7 @@ import org.backend.lab2.coordinates.CoordinatesRepository;
 import org.backend.lab2.coordinates.dto.CoordinatesRequest;
 import org.backend.lab2.locations.LocationRepository;
 import org.backend.lab2.locations.dto.LocationRequest;
+import org.backend.lab2.persons.PersonRepository;
 import org.backend.lab2.persons.dto.PersonRequest;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +22,12 @@ public class ImportValidator {
     private final Validator validator;
     private final LocationRepository locationRepository;
     private final CoordinatesRepository coordinatesRepository;
+    private final PersonRepository personRepository;
 
     public void validateImport(List<PersonRequest> persons) {
         Set<CoordinatesRequest> coordinates = new HashSet<>();
         Set<LocationRequest> location = new HashSet<>();
+        Set<String> name = new HashSet<>();
         List<String> errors = new ArrayList<>();
         for (PersonRequest personRequest : persons) {
             Set<ConstraintViolation<PersonRequest>> violations = validator.validate(personRequest);
@@ -37,6 +40,14 @@ public class ImportValidator {
                                     violation.getMessage()
                             )
                     );
+                }
+            }
+            if (personRequest.name() != null) {
+                if (!name.add(personRequest.name())) {
+                    errors.add(String.format("Person wit name %s already exist in import file", personRequest.name()));
+                }
+                if (personRepository.existsByName(personRequest.name())) {
+                    errors.add(String.format("Person with name %s already exist", personRequest.name()));
                 }
             }
             if (personRequest.coordinatesId() != null) {
