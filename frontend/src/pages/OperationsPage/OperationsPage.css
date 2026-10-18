@@ -1,0 +1,70 @@
+.ops-page {
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.ops-page h2 {
+    margin-bottom: 24px;
+}
+
+.ops-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.op-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 16px 20px;
+}
+
+.op-card h4 {
+    margin: 0 0 12px 0;
+    color: #1e293b;
+}
+
+.op-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.op-controls input, .op-controls select {
+    padding: 7px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+
+.btn-op {
+    background-color: #e6f0fa;
+    color: #0066cc;
+    border: 1px solid #b9d5f3;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-op:hover {
+    background-color: #dbeafe;
+}
+
+.btn-op-delete {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.op-result {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #0f172a;
+}

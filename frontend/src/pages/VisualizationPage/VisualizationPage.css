@@ -1,0 +1,106 @@
+.vis-page {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vis-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.vis-header h2 {
+    margin: 0 0 6px 0;
+}
+
+.vis-hint {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.svg-wrapper {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+}
+
+.point-group {
+    cursor: pointer;
+}
+
+.person-dot {
+    fill: #0066cc;
+    transition: r 0.15s ease, fill 0.15s ease;
+}
+
+.point-group:hover .person-dot {
+    fill: #dc2626;
+    r: 7px;
+}
+
+.vis-tooltip-container {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 280px;
+    overflow-y: auto;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.vis-tooltip-card {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-left: 3px solid #0066cc;
+}
+
+.picker-modal {
+    width: 380px;
+}
+
+.picker-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.picker-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+}
+
+.picker-item:hover {
+    background-color: #e6f0fa;
+    border-color: #0066cc;
+}
+
+.picker-id {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-left: 4px;
+}
+
+.picker-arrow {
+    font-size: 0.85rem;
+    color: #0066cc;
+    font-weight: 600;
+}
