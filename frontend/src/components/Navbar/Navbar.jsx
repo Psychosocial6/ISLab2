@@ -4,7 +4,7 @@ import './Navbar.css';
 export default function Navbar({currentTab, setCurrentTab, username, onLogout}) {
     return (
         <nav className="navbar">
-            <div className="nav-brand"></div>
+            <div className="nav-brand">Persons App</div>
             <div className="nav-links">
                 <button
                     className={`nav-btn ${currentTab === 'table' ? 'active' : ''}`}
@@ -23,6 +23,12 @@ export default function Navbar({currentTab, setCurrentTab, username, onLogout}) 
                     onClick={() => setCurrentTab('operations')}
                 >
                     Special Operations
+                </button>
+                <button
+                    className={`nav-btn ${currentTab === 'import' ? 'active' : ''}`}
+                    onClick={() => setCurrentTab('import')}
+                >
+                    Import
                 </button>
             </div>
             <div className="nav-user">

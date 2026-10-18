@@ -1,0 +1,133 @@
+.import-page {
+    padding: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.import-page h2 {
+    margin-bottom: 24px;
+    color: #0f172a;
+}
+
+.import-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+}
+
+.import-card h4 {
+    margin: 0 0 8px 0;
+    color: #1e293b;
+}
+
+.import-hint {
+    color: #64748b;
+    font-size: 0.88rem;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.import-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.import-form input[type="file"] {
+    font-size: 0.9rem;
+    padding: 6px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 4px;
+    background: #f8fafc;
+    flex: 1;
+}
+
+.btn-upload {
+    background-color: #0066cc;
+    color: #ffffff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.btn-upload:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.import-alert {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    white-space: pre-line;
+}
+
+.alert-error {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.alert-success {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+}
+
+/* Секция истории */
+.history-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.history-header h3 {
+    margin: 0;
+    color: #1e293b;
+}
+
+.btn-refresh {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-refresh:hover {
+    background: #f1f5f9;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.status-success {
+    background-color: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+.status-failed {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fca5a5;
+}

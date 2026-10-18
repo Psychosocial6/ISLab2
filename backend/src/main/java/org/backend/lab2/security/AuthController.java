@@ -29,7 +29,11 @@ public class AuthController {
         if (userRepository.existsByUsername(request.username())) {
             throw new UserAlreadyExistsException("User already exists");
         }
-        User user = new User(request.username(), passwordEncoder.encode(request.password()));
+        User user = new User(
+                request.username(),
+                passwordEncoder.encode(request.password()),
+                Role.ROLE_USER
+        );
         userRepository.save(user);
         String token = jwtService.generateToken(user.getUsername());
         return ResponseEntity.ok(new AuthResponse(token));

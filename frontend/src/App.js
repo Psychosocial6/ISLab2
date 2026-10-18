@@ -4,6 +4,7 @@ import AuthPage from './pages/AuthPage/AuthPage';
 import TablePage from './pages/TablePage/TablePage';
 import VisualizationPage from './pages/VisualizationPage/VisualizationPage';
 import OperationsPage from './pages/OperationsPage/OperationsPage';
+import ImportPage from './pages/ImportPage/ImportPage';
 import {connectWebSocket, disconnectWebSocket} from './websocket/stompClient';
 import './App.css';
 
@@ -56,6 +57,7 @@ function App() {
                 {currentTab === 'table' && <TablePage personsEvent={wsEvent}/>}
                 {currentTab === 'visualization' && <VisualizationPage personsEvent={wsEvent}/>}
                 {currentTab === 'operations' && <OperationsPage/>}
+                {currentTab === 'import' && <ImportPage/>}
             </main>
         </div>
     );

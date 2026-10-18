@@ -2,23 +2,27 @@ const BASE_URL = 'http://localhost:8080';
 
 export async function request(endpoint, options = {}) {
     const token = localStorage.getItem('token');
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers,
-    };
+    const headers = {...options.headers};
+    if (!(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+    }
+
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
     }
+
     const response = await fetch(`${BASE_URL}${endpoint}`, {
         ...options,
         headers,
     });
+
     if (response.status === 401 || response.status === 403) {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         window.location.reload();
         throw new Error('Unauthorized');
     }
+
     if (!response.ok) {
         let errorMessage = 'Request failed';
         try {
@@ -28,6 +32,7 @@ export async function request(endpoint, options = {}) {
         }
         throw new Error(errorMessage);
     }
+
     if (response.status === 204) {
         return null;
     }
@@ -54,5 +59,10 @@ export const api = {
     getAvgHeight: () => request('/api/person/avg-height'),
     countNationalityLessThan: (nationality) => request(`/api/person/count-nationality-less-than?nationality=${nationality}`),
     countHairColor: (color) => request(`/api/person/count-hair-color?hair-color=${color}`),
-    getHairColorPercentage: (color) => request(`/api/person/hair-color-percentage?hair-color=${color}`)
+    getHairColorPercentage: (color) => request(`/api/person/hair-color-percentage?hair-color=${color}`),
+    importPersons: (formData) => request('/api/person/import', {
+        method: 'POST',
+        body: formData
+    }),
+    getImportHistory: () => request('/api/import/history')
 };

@@ -7,13 +7,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.backend.lab2.enums.Color;
 import org.backend.lab2.enums.Country;
+import org.backend.lab2.imports.ImportService;
+import org.backend.lab2.imports.ImportStatus;
 import org.backend.lab2.persons.dto.PersonRequest;
 import org.backend.lab2.persons.dto.PersonResponse;
+import org.backend.lab2.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +40,7 @@ import java.util.Map;
 @RestController
 public class PersonController {
     private final PersonService personService;
+    private final ImportService importService;
 
     @GetMapping
     public ResponseEntity<Page<PersonResponse>> getPersons(
@@ -131,12 +136,22 @@ public class PersonController {
     }
 
     @PostMapping(path = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<PersonResponse>> importPersons(@RequestParam(name = "file") MultipartFile file) {
+    public ResponseEntity<List<PersonResponse>> importPersons(
+            @RequestParam(name = "file") MultipartFile file,
+            @AuthenticationPrincipal User user
+    ) {
         log.info("importPersons called");
-        String name = file.getOriginalFilename();
-        if (name == null || !name.endsWith(".json")) {
-            throw new IllegalArgumentException("Incorrect import file format");
+        try {
+            String name = file.getOriginalFilename();
+            if (name == null || !name.endsWith(".json")) {
+                throw new IllegalArgumentException("Incorrect import file format");
+            }
+            List<PersonResponse> personResponses = personService.importPersons(file);
+            importService.logImport(ImportStatus.SUCCESS, user.getId(), (long) personResponses.size());
+            return ResponseEntity.status(HttpStatus.CREATED).body(personResponses);
+        } catch (Exception e) {
+            importService.logImport(ImportStatus.FAILED, user.getId(), null);
+            throw e;
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(personService.importPersons(file));
     }
 }
