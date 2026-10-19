@@ -1,5 +1,6 @@
 package org.backend.lab2.security;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.backend.lab2.exceptions.custom.UserAlreadyExistsException;
 import org.backend.lab2.security.dto.AuthRequest;
@@ -25,7 +26,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AuthRequest request) {
+    public ResponseEntity<?> register(@RequestBody @Valid AuthRequest request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new UserAlreadyExistsException("User already exists");
         }

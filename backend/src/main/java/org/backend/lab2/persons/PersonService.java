@@ -1,6 +1,5 @@
 package org.backend.lab2.persons;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.backend.lab2.coordinates.CoordinatesEntity;
@@ -24,6 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
@@ -59,7 +60,7 @@ public class PersonService {
                 .orElseThrow(() -> new PersonNotFoundException(id));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public PersonResponse createPerson(PersonRequest personRequest) {
         if (personRepository.existsByName(personRequest.name())) {
             throw new IllegalArgumentException(
@@ -78,7 +79,7 @@ public class PersonService {
                 personRequest.nationality()
         );
 
-        PersonResponse response = personMapper.fromEntity(personRepository.save(personEntity));
+        PersonResponse response = personMapper.fromEntity(personRepository.saveAndFlush(personEntity));
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
@@ -93,7 +94,7 @@ public class PersonService {
         return response;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public PersonResponse updatePerson(Long id, PersonRequest personRequest) {
         PersonEntity personEntity = personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
@@ -175,7 +176,7 @@ public class PersonService {
         return response;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void deletePerson(Long id, Long transferToId) {
         if (id.equals(transferToId)) {
             throw new IllegalArgumentException("cannot transfer id to deleted person");
@@ -273,7 +274,7 @@ public class PersonService {
         return Map.of("percentage", percentage);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<PersonResponse> importPersons(MultipartFile file) {
         List<PersonRequest> personRequests = importMapper.parseRequest(file);
         List<PersonResponse> personResponses = new ArrayList<>();
@@ -324,7 +325,7 @@ public class PersonService {
                 personRequest.coordinates().x(),
                 personRequest.coordinates().y()
         );
-        return coordinatesRepository.save(coordinates);
+        return coordinatesRepository.saveAndFlush(coordinates);
     }
 
     private LocationEntity resolveLocation(PersonRequest personRequest) {
@@ -346,7 +347,7 @@ public class PersonService {
                     location.y(),
                     location.z()
             );
-            return locationRepository.save(locationEntity);
+            return locationRepository.saveAndFlush(locationEntity);
         }
         return null;
     }
